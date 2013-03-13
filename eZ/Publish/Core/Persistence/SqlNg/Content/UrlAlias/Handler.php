@@ -112,7 +112,7 @@ class Handler implements UrlAliasHandlerInterface
         $isLanguageMain = false
     )
     {
-        throw new \RuntimeException( "@TODO: Implement" );
+        // throw new \RuntimeException( "@TODO: Implement" );
     }
 
     /**
