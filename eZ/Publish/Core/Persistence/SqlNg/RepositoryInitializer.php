@@ -718,6 +718,7 @@ class RepositoryInitializer
                     'id' => $userContent->versionInfo->contentInfo->id,
                     'login' => $name,
                     'email' => 'nospam@ez.no',
+                    'isEnabled' => true,
                     'passwordHash' => $passwordHash,
                     'hashAlgorithm' => '2',
                 )
