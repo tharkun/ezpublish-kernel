@@ -54,9 +54,9 @@ class SqlNg extends Legacy
             )
         );
 
-        $repository->setCurrentUser(
-            $repository->getUserService()->loadUser( 14 )
-        );
+//        $repository->setCurrentUser(
+//            $repository->getUserService()->loadUser( 14 )
+//        );
         return $repository;
     }
 

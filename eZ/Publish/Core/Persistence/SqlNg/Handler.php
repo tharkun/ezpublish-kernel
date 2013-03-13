@@ -597,4 +597,16 @@ class Handler implements HandlerInterface
             throw new RuntimeException( $e->getMessage() );
         }
     }
+
+    /**
+     * Initialize repository
+     *
+     * @return void
+     */
+    public function initializeRepository()
+    {
+        $initializer = new RepositoryInitializer();
+        $initializer->initializeSchema($this->dbHandler);
+        $initializer->initialize($this);
+    }
 }
