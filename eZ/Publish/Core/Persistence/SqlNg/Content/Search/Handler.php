@@ -124,7 +124,19 @@ class Handler extends Persistence\Content\Search\Handler
      */
     public function findSingle( Criterion $criterion, array $fieldFilters = array() )
     {
-        throw new \RuntimeException( "@TODO: Implement" );
+        $query = new Query();
+        $query->criterion = $criterion;
+        $query->offset    = 0;
+        $query->limit     = 1;
+        $result = $this->findContent( $query, $fieldFilters );
+
+        if ( !$result->totalCount )
+            throw new NotFoundException( 'Content', "findSingle() found no content for given \$criterion" );
+        else if ( $result->totalCount > 1 )
+            throw new InvalidArgumentException( "totalCount", "findSingle() found more then one item for given \$criterion" );
+
+        $first = reset( $result->searchHits );
+        return $first->valueObject;
     }
 
     /**
@@ -163,7 +175,7 @@ class Handler extends Persistence\Content\Search\Handler
      */
     public function deleteContent( $contentID, $versionID = null )
     {
-        throw new \RuntimeException("Not implemented, yet.");
+        throw new \RuntimeException( "Not implemented, yet." );
     }
 }
 
