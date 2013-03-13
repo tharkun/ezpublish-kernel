@@ -42,6 +42,7 @@ class RepositoryInitializer
         $landingPageType = $this->createLandingPageType( $importUser, $contentContentTypeGroup );
         $userGroupType = $this->createUserGroupType( $importUser, $usersContentTypeGroup );
         $userType = $this->createUserType( $importUser, $usersContentTypeGroup );
+        $contentType = $this->createContentType( $importUser, $contentContentTypeGroup );
 
         // Root location
         $rootLocationCreate = new Persistence\Content\Location\CreateStruct(
@@ -56,11 +57,24 @@ class RepositoryInitializer
 
 
         $userGroup = $this->createRootUserGroup( $importUser, $userGroupType, $usersSection, $rootLocation, $language );
-        $home = $this->createHome( $importUser, $landingPageType, $standardSection, $rootLocation, $language );
-
-        // User
         $userRoot = $userGroup->versionInfo->contentInfo->mainLocationId;
+        $home = $this->createHome( $importUser, $landingPageType, $standardSection, $rootLocation, $language );
+        $contentRoot = $home->versionInfo->contentInfo->mainLocationId;
+
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 1!' ); // 3
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 2!' ); // 4
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 3!' ); // 5
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 4!' ); // 6
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 5!' ); // 7
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 6!' ); // 8
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 7!' ); // 9
+
         $anonymousUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'anonymous', '4e6f6184135228ccd45f8233d72a0363' );
+
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 8!' ); // 11
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 9!' ); // 12
+        $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 10!' ); // 13
+
         $adminUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'admin', 'c78e3b0f3d9244ed8c6d1c29464bdff9' );
     }
 
@@ -283,6 +297,106 @@ class RepositoryInitializer
         );
 
         return $this->handler->contentTypeHandler()->create( $userGroupTypeCreate );
+    }
+
+    protected function createContentType( $importUser, $contentTypeGroup )
+    {
+        $contentTypeCreate = new Persistence\Content\Type\CreateStruct(
+            array(
+                'name' => array(
+                    'eng-GB' => 'Folder',
+                ),
+                'status' => 0,
+                'description' => array(),
+                'identifier' => 'folder',
+
+                'created' => time(),
+                'modified' => time(),
+                'creatorId' => $importUser->id,
+                'modifierId' => $importUser->id,
+
+                'remoteId' => 'folder-8432795823475923',
+
+                'urlAliasSchema' => '',
+                'nameSchema' => '<title>',
+                'isContainer' => true,
+                'initialLanguageId' => 2,
+
+                'sortField' => 1,
+                'sortOrder' => 1,
+
+                'groupIds' => array( $contentTypeGroup->id ),
+
+                'fieldDefinitions' => array(
+                    new Persistence\Content\Type\FieldDefinition(
+                        array(
+                            'name' => array(
+                                'eng-GB' => 'title',
+                            ),
+                            'description' => array(),
+                            'identifier' => 'title',
+                            'fieldGroup' => '',
+                            'position' => 1,
+                            'fieldType' => 'ezstring',
+                            'isTranslatable' => true,
+                            'isRequired' => true,
+                            'isInfoCollector' => false,
+                            'fieldTypeConstraints' => new Persistence\Content\FieldTypeConstraints(
+                                array(
+                                    'validators' => array(
+                                        'StringLengthValidator' => array(
+                                            'maxStringLength' => 255,
+                                            'minStringLength' => 0,
+                                        ),
+                                    ),
+                                    'fieldSettings' => NULL,
+                                )
+                            ),
+                            'defaultValue' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => NULL,
+                                    'externalData' => NULL,
+                                    'sortKey' => NULL,
+                                )
+                            ),
+                            'isSearchable' => true,
+                        )
+                    ),
+                    new Persistence\Content\Type\FieldDefinition(
+                        array(
+                            'name' => array(
+                                'eng-GB' => 'text',
+                            ),
+                            'description' => array(),
+                            'identifier' => 'text',
+                            'fieldGroup' => '',
+                            'position' => 2,
+                            'fieldType' => 'ezxmltext',
+                            'isTranslatable' => true,
+                            'isRequired' => true,
+                            'isInfoCollector' => false,
+                            'fieldTypeConstraints' => new Persistence\Content\FieldTypeConstraints(
+                                array(
+                                    'validators' => array(),
+                                    'fieldSettings' => NULL,
+                                )
+                            ),
+                            'defaultValue' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => NULL,
+                                    'externalData' => NULL,
+                                    'sortKey' => NULL,
+                                )
+                            ),
+                            'isSearchable' => true,
+                        )
+                    ),
+                ),
+                'defaultAlwaysAvailable' => true,
+            )
+        );
+
+        return $this->handler->contentTypeHandler()->create( $contentTypeCreate );
     }
 
     protected function createLandingPageType( $importUser, $contentContentTypeGroup )
@@ -555,7 +669,6 @@ class RepositoryInitializer
                             'priority' => 0,
                             'remoteId' => $name,
                             'parentId' => $rootLocation,
-                            'pathIdentificationString' => 'users',
                             'sortField' => 1,
                             'sortOrder' => 1,
                         )
@@ -585,7 +698,7 @@ class RepositoryInitializer
                 'initialLanguageId' => $language->id,
 
                 'name' => array(
-                    'eng-GB' => 'Users',
+                    'eng-GB' => $name,
                 ),
             )
         );
@@ -607,6 +720,77 @@ class RepositoryInitializer
                     'hashAlgorithm' => '2',
                 )
             )
+        );
+    }
+
+    protected function createContent( $importUser, $contentType, $section, $rootLocation, $language, $content )
+    {
+        $contentCreate = new Persistence\Content\CreateStruct(
+            array(
+                'name' => 'Users',
+                'typeId' => $contentType->id,
+                'sectionId' => $section->id,
+                'ownerId' => $importUser->id,
+                'modified' => time(),
+
+                'locations' => array(
+                    $userRootLocation = new Persistence\Content\Location\CreateStruct(
+                        array(
+                            'priority' => 0,
+                            'remoteId' => md5( microtime() ),
+                            'parentId' => $rootLocation,
+                        )
+                    )
+                ),
+
+                'fields' => array(
+                    new Persistence\Content\Field(
+                        array(
+                            'fieldDefinitionId' => $this->getFieldDefinition( $contentType, 1 ),
+                            'type' => 'ezstring',
+                            'value' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => $content,
+                                    'externalData' => NULL,
+                                    'sortKey' => '',
+                                )
+                            ),
+                            'languageCode' => 'eng-GB',
+                        )
+                    ),
+                    new Persistence\Content\Field(
+                        array(
+                            'fieldDefinitionId' => $this->getFieldDefinition( $contentType, 2 ),
+                            'type' => 'ezxmltext',
+                            'value' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => '<?xml version="1.0"?>' . "\n" .
+                                    '<section><paragraph>' . $content . '</paragraph></section>',
+                                    'externalData' => NULL,
+                                    'sortKey' => '',
+                                )
+                            ),
+                            'languageCode' => 'eng-GB',
+                        )
+                    ),
+                ),
+
+                'alwaysAvailable' => true,
+                'remoteId' => md5( microtime() ),
+
+                'initialLanguageId' => $language->id,
+
+                'name' => array(
+                    'eng-GB' => $content,
+                ),
+            )
+        );
+
+        $content = $this->handler->contentHandler()->create( $contentCreate );
+        return $this->handler->contentHandler()->publish(
+            $content->versionInfo->id,
+            $content->versionInfo->versionNo,
+            new Persistence\Content\MetadataUpdateStruct()
         );
     }
 
