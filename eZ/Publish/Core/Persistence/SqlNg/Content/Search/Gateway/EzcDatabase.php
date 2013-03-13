@@ -159,7 +159,7 @@ class EzcDatabase extends Gateway
 
         if ( count( $sort ) )
         {
-            $this->sortClauseConverter->applyJoin( $query, $sort );
+            // $this->sortClauseConverter->applyJoin( $query, $sort );
         }
 
         $query->where(
@@ -193,7 +193,7 @@ class EzcDatabase extends Gateway
 
         if ( count( $sort ) )
         {
-            $this->sortClauseConverter->applySelect( $query, $sort );
+            // $this->sortClauseConverter->applySelect( $query, $sort );
         }
 
         $query->from(
@@ -211,7 +211,7 @@ class EzcDatabase extends Gateway
 
         if ( count( $sort ) )
         {
-            $this->sortClauseConverter->applyOrderBy( $query, $sort );
+            // $this->sortClauseConverter->applyOrderBy( $query, $sort );
         }
 
         $query->limit( $limit, $offset );
