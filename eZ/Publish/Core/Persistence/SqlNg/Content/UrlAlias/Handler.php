@@ -26,8 +26,7 @@ use RuntimeException;
  */
 class Handler implements UrlAliasHandlerInterface
 {
-    protected $configuration = array(
-    );
+    protected $configuration = array();
 
     /**
      * UrlAlias Gateway
@@ -84,7 +83,7 @@ class Handler implements UrlAliasHandlerInterface
         array $configuration = array() */
     )
     {
-        throw new \RuntimeException( "@TODO: Implement" );
+        // throw new \RuntimeException( "@TODO: Implement" );
     }
 
     /**
@@ -168,7 +167,7 @@ class Handler implements UrlAliasHandlerInterface
      */
     public function listURLAliasesForLocation( $locationId, $custom = false )
     {
-        throw new \RuntimeException( "@TODO: Implement" );
+        return array();
     }
 
     /**
