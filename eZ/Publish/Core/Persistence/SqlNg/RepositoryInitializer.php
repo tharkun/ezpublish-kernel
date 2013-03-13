@@ -29,7 +29,8 @@ class RepositoryInitializer
         $this->handler = $handler;
 
         $importUser = $this->createImportUser();
-        $language = $this->createLanguage();
+        $language = $this->createLanguage( 'eng-US' );
+        $language = $this->createLanguage( 'eng-GB' );
 
         $standardSection = $this->handler->sectionHandler()->create( 'Standard', 'standard' );
         $usersSection = $this->handler->sectionHandler()->create( 'Users', 'users' );
@@ -94,13 +95,13 @@ class RepositoryInitializer
         );
     }
 
-    protected function createLanguage()
+    protected function createLanguage( $language )
     {
         return $this->handler->contentLanguageHandler()->create(
             new Persistence\Content\Language\CreateStruct(
                 array(
-                    'languageCode' => 'eng-GB',
-                    'name' => 'English (British)',
+                    'languageCode' => $language,
+                    'name' => 'English',
                     'isEnabled' => true,
                 )
             )
