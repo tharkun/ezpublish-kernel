@@ -1,5 +1,8 @@
 parameters:
+    # InMemory engine
     ezpublish.api.storage_engine.in_memory.class: eZ\Publish\Core\Persistence\InMemory\Handler
+
+    # Legacy engine
     ezpublish.api.storage_engine.legacy.class: eZ\Publish\Core\Persistence\Legacy\Handler
     ezpublish.api.storage_engine.legacy.dbhandler.class: eZ\Publish\Core\Persistence\Legacy\EzcDbHandler
     ezpublish.api.storage_engine.legacy.factory.class: eZ\Bundle\EzPublishCoreBundle\ApiLoader\LegacyStorageEngineFactory
@@ -39,6 +42,12 @@ parameters:
         - ../vendor/ezsystems/ezpublish-kernel/eZ/Publish/Core/Persistence/Legacy/Tests/Content/SearchHandler/_fixtures/transformations/hebrew.tr.result
         - ../vendor/ezsystems/ezpublish-kernel/eZ/Publish/Core/Persistence/Legacy/Tests/Content/SearchHandler/_fixtures/transformations/latin.tr.result
         - ../vendor/ezsystems/ezpublish-kernel/eZ/Publish/Core/Persistence/Legacy/Tests/Content/SearchHandler/_fixtures/transformations/search.tr.result
+
+    # SqlNg engine
+    ezpublish.api.storage_engine.sqlng.class: eZ\Publish\Core\Persistence\SqlNg\Handler
+    ezpublish.api.storage_engine.sqlng.factory.class: eZ\Bundle\EzPublishCoreBundle\ApiLoader\SqlNgStorageEngineFactory
+    #ezpublish.api.storage_engine.sqlng.dsn: <database_type>://<user>:<password>@<host>/<database_name>
+    ezpublish.api.storage_engine.sqlng.defer_type_update: false
 
     # Value converters
     ezpublish.fieldType.ezauthor.converter.class: eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter\Author
@@ -104,6 +113,21 @@ services:
             - %ezpublish.api.storage_engine.legacy.defer_type_update%
         tags:
             - {name: ezpublish.storageEngine, alias: legacy}
+
+    # SqlNg storage engine
+    ezpublish.api.storage_engine.sqlng.factory:
+        class: %ezpublish.api.storage_engine.sqlng.factory.class%
+        arguments: [@service_container]
+
+    ezpublish.api.storage_engine.sqlng:
+        class: %ezpublish.api.storage_engine.sqlng.class%
+        factory_service: ezpublish.api.storage_engine.sqlng.factory
+        factory_method: buildEngine
+        arguments:
+            - @ezpublish.api.storage_engine.legacy.dbhandler
+            - %ezpublish.api.storage_engine.sqlng.defer_type_update%
+        tags:
+            - {name: ezpublish.storageEngine, alias: sqlng}
 
     ezpublish.api.storage_engine.legacy.transformation_parser:
         class: %ezpublish.api.storage_engine.legacy.transformation_parser.class%
