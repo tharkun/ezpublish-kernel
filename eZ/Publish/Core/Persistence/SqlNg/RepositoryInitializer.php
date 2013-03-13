@@ -535,7 +535,7 @@ class RepositoryInitializer
                 'fields' => array(
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $userGroupType, 1 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $userGroupType, 1 )->id,
                             'type' => 'ezstring',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -549,7 +549,7 @@ class RepositoryInitializer
                     ),
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $userGroupType, 2 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $userGroupType, 2 )->id,
                             'type' => 'ezstring',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -615,7 +615,7 @@ class RepositoryInitializer
                 'fields' => array(
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $landingPageType, 1 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $landingPageType, 1 )->id,
                             'type' => 'ezstring',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -629,7 +629,7 @@ class RepositoryInitializer
                     ),
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $landingPageType, 2 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $landingPageType, 2 )->id,
                             'type' => 'ezpage',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -680,7 +680,7 @@ class RepositoryInitializer
                 'fields' => array(
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $userGroupType, 1 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $userGroupType, 1 )->id,
                             'type' => 'ezstring',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -766,7 +766,7 @@ class RepositoryInitializer
                 'fields' => array(
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $contentType, 1 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $contentType, 1 )->id,
                             'type' => 'ezstring',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
@@ -780,7 +780,7 @@ class RepositoryInitializer
                     ),
                     new Persistence\Content\Field(
                         array(
-                            'fieldDefinitionId' => $this->getFieldDefinition( $contentType, 2 )->id,
+                            'fieldDefinitionId' => (int) $this->getFieldDefinition( $contentType, 2 )->id,
                             'type' => 'ezxmltext',
                             'value' => new Persistence\Content\FieldValue(
                                 array(
