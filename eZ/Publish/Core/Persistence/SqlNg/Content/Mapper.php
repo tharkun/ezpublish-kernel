@@ -209,6 +209,7 @@ class Mapper
         return array_map(
             function ( $data )
             {
+                $data['value'] = new Persistence\Content\FieldValue( $data['value'] );
                 return new Persistence\Content\Field( $data );
             },
             $fields
