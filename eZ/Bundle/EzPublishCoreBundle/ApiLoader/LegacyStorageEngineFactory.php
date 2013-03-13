@@ -72,7 +72,7 @@ class LegacyStorageEngineFactory
      *
      * @return \eZ\Publish\Core\Persistence\Legacy\Handler
      */
-    public function buildLegacyEngine( EzcDbHandler $dbhandler, $deferTypeUpdate )
+    public function buildEngine( EzcDbHandler $dbhandler, $deferTypeUpdate )
     {
         $legacyEngineClass = $this->container->getParameter( 'ezpublish.api.storage_engine.legacy.class' );
         return new $legacyEngineClass(
