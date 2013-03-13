@@ -19,7 +19,6 @@ parameters:
         eZ\Publish\Core\SignalSlot\Signal\ContentService\DeleteVersionSignal: [ezpublish.signalslot.legacy_slot.delete_version]
         eZ\Publish\Core\SignalSlot\Signal\LocationService\HideLocationSignal: [ezpublish.signalslot.legacy_slot.hide_location]
         eZ\Publish\Core\SignalSlot\Signal\LocationService\MoveSubtreeSignal: [ezpublish.signalslot.legacy_slot.move_subtree]
-        eZ\Publish\Core\SignalSlot\Signal\ContentService\PublishVersionSignal: [ezpublish.signalslot.legacy_slot.publish_version]
         eZ\Publish\Core\SignalSlot\Signal\ObjectStateService\SetContentStateSignal: [ezpublish.signalslot.legacy_slot.set_content_state]
         eZ\Publish\Core\SignalSlot\Signal\LocationService\SwapLocationSignal: [ezpublish.signalslot.legacy_slot.swap_location]
         eZ\Publish\Core\SignalSlot\Signal\LocationService\UnhideLocationSignal: [ezpublish.signalslot.legacy_slot.unhide_location]
@@ -33,7 +32,6 @@ parameters:
     ezpublish.signalslot.legacy_slot.delete_version.class: eZ\Publish\Core\SignalSlot\Slot\LegacyDeleteVersionSlot
     ezpublish.signalslot.legacy_slot.hide_location.class: eZ\Publish\Core\SignalSlot\Slot\LegacyHideLocationSlot
     ezpublish.signalslot.legacy_slot.move_subtree.class: eZ\Publish\Core\SignalSlot\Slot\LegacyMoveSubtreeSlot
-    ezpublish.signalslot.legacy_slot.publish_version.class: eZ\Publish\Core\SignalSlot\Slot\LegacyPublishVersionSlot
     ezpublish.signalslot.legacy_slot.set_content_state.class: eZ\Publish\Core\SignalSlot\Slot\LegacySetContentStateSlot
     ezpublish.signalslot.legacy_slot.swap_location.class: eZ\Publish\Core\SignalSlot\Slot\LegacySwapLocationSlot
     ezpublish.signalslot.legacy_slot.unhide_location.class: eZ\Publish\Core\SignalSlot\Slot\LegacyUnhideLocationSlot
@@ -211,10 +209,6 @@ services:
 
     ezpublish.signalslot.legacy_slot.move_subtree:
         class: %ezpublish.signalslot.legacy_slot.move_subtree.class%
-        arguments: [@ezpublish_legacy.kernel]
-
-    ezpublish.signalslot.legacy_slot.publish_version:
-        class: %ezpublish.signalslot.legacy_slot.publish_version.class%
         arguments: [@ezpublish_legacy.kernel]
 
     ezpublish.signalslot.legacy_slot.set_content_state:
