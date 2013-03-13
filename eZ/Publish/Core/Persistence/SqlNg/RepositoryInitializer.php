@@ -306,11 +306,11 @@ class RepositoryInitializer
         $contentTypeCreate = new Persistence\Content\Type\CreateStruct(
             array(
                 'name' => array(
-                    'eng-GB' => 'Folder',
+                    'eng-GB' => 'Article',
                 ),
                 'status' => 0,
                 'description' => array(),
-                'identifier' => 'folder',
+                'identifier' => 'article',
 
                 'created' => time(),
                 'modified' => time(),
@@ -320,7 +320,7 @@ class RepositoryInitializer
                 'remoteId' => 'folder-8432795823475923',
 
                 'urlAliasSchema' => '',
-                'nameSchema' => '<title>',
+                'nameSchema' => '<name>',
                 'isContainer' => true,
                 'initialLanguageId' => 2,
 
@@ -333,10 +333,10 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-GB' => 'title',
+                                'eng-GB' => 'name',
                             ),
                             'description' => array(),
-                            'identifier' => 'title',
+                            'identifier' => 'name',
                             'fieldGroup' => '',
                             'position' => 1,
                             'fieldType' => 'ezstring',
@@ -367,10 +367,10 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-GB' => 'text',
+                                'eng-GB' => 'description',
                             ),
                             'description' => array(),
-                            'identifier' => 'text',
+                            'identifier' => 'description',
                             'fieldGroup' => '',
                             'position' => 2,
                             'fieldType' => 'ezxmltext',
