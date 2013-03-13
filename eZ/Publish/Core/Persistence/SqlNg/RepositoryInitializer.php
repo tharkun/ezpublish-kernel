@@ -55,6 +55,7 @@ class RepositoryInitializer
         );
         $rootLocation = $this->handler->locationHandler()->create( $rootLocationCreate );
 
+        $role = $this->createRole();
 
         $userGroup = $this->createRootUserGroup( $importUser, $userGroupType, $usersSection, $rootLocation, $language );
         $userRoot = $userGroup->versionInfo->contentInfo->mainLocationId;
@@ -69,13 +70,13 @@ class RepositoryInitializer
         $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 6!' ); // 8
         $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 7!' ); // 9
 
-        $anonymousUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'anonymous', '4e6f6184135228ccd45f8233d72a0363' );
+        $anonymousUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $role, $language, 'anonymous', '4e6f6184135228ccd45f8233d72a0363' );
 
         $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 8!' ); // 11
         $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 9!' ); // 12
         $this->createContent( $importUser, $contentType, $standardSection, $contentRoot, $language, 'Hello World 10!' ); // 13
 
-        $adminUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'admin', 'c78e3b0f3d9244ed8c6d1c29464bdff9' );
+        $adminUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $role, $language, 'admin', 'c78e3b0f3d9244ed8c6d1c29464bdff9' );
     }
 
     protected function createImportUser()
@@ -653,7 +654,7 @@ class RepositoryInitializer
         );
     }
 
-    protected function createUser( $importUser, $userGroupType, $usersSection, $rootLocation, $language, $name, $passwordHash )
+    protected function createUser( $importUser, $userGroupType, $usersSection, $rootLocation, $role, $language, $name, $passwordHash )
     {
         $userContentCreate = new Persistence\Content\CreateStruct(
             array(
@@ -710,7 +711,7 @@ class RepositoryInitializer
             new Persistence\Content\MetadataUpdateStruct()
         );
 
-        return $this->handler->userHandler()->create(
+        $user = $this->handler->userHandler()->create(
             new Persistence\User(
                 array(
                     'id' => $userContent->versionInfo->contentInfo->id,
@@ -721,6 +722,24 @@ class RepositoryInitializer
                 )
             )
         );
+
+        $this->handler->userHandler()->assignRole(
+            $user->id,
+            $role->id
+        );
+    }
+
+    protected function createRole()
+    {
+        $role = new Persistence\User\Role();
+        $role->identifier = 'Allow everything';
+        $role->policies[] = $policy = new Persistence\User\Policy();
+
+        $policy->module = '*';
+        $policy->function = '*';
+        $policy->limitations = '*';
+
+        return $this->handler->userHandler()->createRole( $role );
     }
 
     protected function createContent( $importUser, $contentType, $section, $rootLocation, $language, $content )
