@@ -44,6 +44,7 @@ class RepositoryInitializer
         $userGroupType = $this->createUserGroupType( $importUser, $usersContentTypeGroup );
         $userType = $this->createUserType( $importUser, $usersContentTypeGroup );
         $contentType = $this->createContentType( $importUser, $contentContentTypeGroup );
+        $commentType = $this->createCommentType( $importUser, $contentContentTypeGroup );
 
         // Root location
         $rootLocationCreate = new Persistence\Content\Location\CreateStruct(
@@ -374,6 +375,72 @@ class RepositoryInitializer
                             'fieldGroup' => '',
                             'position' => 2,
                             'fieldType' => 'ezxmltext',
+                            'isTranslatable' => true,
+                            'isRequired' => true,
+                            'isInfoCollector' => false,
+                            'fieldTypeConstraints' => new Persistence\Content\FieldTypeConstraints(
+                                array(
+                                    'validators' => array(),
+                                    'fieldSettings' => NULL,
+                                )
+                            ),
+                            'defaultValue' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => NULL,
+                                    'externalData' => NULL,
+                                    'sortKey' => NULL,
+                                )
+                            ),
+                            'isSearchable' => true,
+                        )
+                    ),
+                ),
+                'defaultAlwaysAvailable' => true,
+            )
+        );
+
+        return $this->handler->contentTypeHandler()->create( $contentTypeCreate );
+    }
+
+    protected function createCommentType( $importUser, $contentTypeGroup )
+    {
+        $contentTypeCreate = new Persistence\Content\Type\CreateStruct(
+            array(
+                'name' => array(
+                    'eng-GB' => 'Comment',
+                ),
+                'status' => 0,
+                'description' => array(),
+                'identifier' => 'comment',
+
+                'created' => time(),
+                'modified' => time(),
+                'creatorId' => $importUser->id,
+                'modifierId' => $importUser->id,
+
+                'remoteId' => 'comment-8432795823475923',
+
+                'urlAliasSchema' => '',
+                'nameSchema' => 'Comment',
+                'isContainer' => true,
+                'initialLanguageId' => 2,
+
+                'sortField' => 1,
+                'sortOrder' => 1,
+
+                'groupIds' => array( $contentTypeGroup->id ),
+
+                'fieldDefinitions' => array(
+                    new Persistence\Content\Type\FieldDefinition(
+                        array(
+                            'name' => array(
+                                'eng-GB' => 'text',
+                            ),
+                            'description' => array(),
+                            'identifier' => 'text',
+                            'fieldGroup' => '',
+                            'position' => 2,
+                            'fieldType' => 'eztext',
                             'isTranslatable' => true,
                             'isRequired' => true,
                             'isInfoCollector' => false,
