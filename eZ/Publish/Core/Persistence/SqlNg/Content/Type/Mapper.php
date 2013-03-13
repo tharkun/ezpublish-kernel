@@ -165,7 +165,7 @@ class Mapper
         $field->isSearchable = (bool)$row['ezcontenttype_field_is_searchable'];
         $field->position = (int)$row['ezcontenttype_field_placement'];
         $field->defaultValue = new Persistence\Content\FieldValue( json_decode( $row['ezcontenttype_field_default_value'], true ) );
-        $field->fieldTypeConstraints = json_decode( $row['ezcontenttype_field_constraints'], true );
+        $field->fieldTypeConstraints = new Persistence\Content\FieldTypeConstraints( json_decode( $row['ezcontenttype_field_constraints'], true ) );
 
         return $field;
     }
