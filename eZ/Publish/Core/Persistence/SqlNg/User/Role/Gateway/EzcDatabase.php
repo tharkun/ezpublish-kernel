@@ -291,6 +291,7 @@ class EzcDatabase extends Gateway
             $this->dbHandler->quoteTable( 'ezrole_content_rel' )
         );
 
+        // @TODO: Re-enable and test
         if ( false && $inherited )
         {
             $groupIds = $this->fetchUserGroups( $groupId );
