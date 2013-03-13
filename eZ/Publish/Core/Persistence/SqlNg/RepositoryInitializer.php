@@ -21,98 +21,109 @@ class RepositoryInitializer
      *
      * @TODO: This one requires serious refactoring
      *
-     * @param Handler $handler
+     * @param Handler $this->handler
      * @return void
      */
     public function initialize( Handler $handler )
     {
-        $creationDate = time();
+        $this->handler = $handler;
 
-        // User
-        $anonymousUser = new Persistence\User(
-            array(
-                'id' => 10,
-                'login' => 'anonymous',
-                'email' => 'nospam@ez.no',
-                'passwordHash' => '4e6f6184135228ccd45f8233d72a0363',
-                'hashAlgorithm' => '2',
-            )
-        );
+        $importUser = $this->createImportUser();
+        $language = $this->createLanguage();
 
-        $anonymousUser = $handler->userHandler()->create( $anonymousUser );
-
-        $adminUser = new Persistence\User(
-            array(
-                'id' => 14,
-                'login' => 'admin',
-                'email' => 'nospam@ez.no',
-                'passwordHash' => 'c78e3b0f3d9244ed8c6d1c29464bdff9',
-                'hashAlgorithm' => '2',
-            )
-        );
-
-        $adminUser = $handler->userHandler()->create( $adminUser );
-
-        // Languages
-
-        $engUsLanguageCreate = new Persistence\Content\Language\CreateStruct(
-            array(
-                'languageCode' => 'eng-US',
-                'name' => 'English (American)',
-                'isEnabled' => true,
-            )
-        );
-
-        $engUsLanguage = $handler->contentLanguageHandler()->create( $engUsLanguageCreate );
-
-        // Sections
-        $standardSection = $handler->sectionHandler()->create( 'Standard', 'standard' );
-
-        $usersSection = $handler->sectionHandler()->create( 'Users', 'users' );
+        $standardSection = $this->handler->sectionHandler()->create( 'Standard', 'standard' );
+        $usersSection = $this->handler->sectionHandler()->create( 'Users', 'users' );
 
         // Content Type Groups
-        $contentContentTypeGroupCreate = new Persistence\Content\Type\Group\CreateStruct(
-            array(
-                'name' => array(),
-                'description' => array(),
-                'identifier' => 'Content',
-                'created' => $creationDate,
-                'modified' => $creationDate,
-                'creatorId' => $adminUser->id,
-                'modifierId' => $adminUser->id,
-            )
-        );
-
-        $contentContentTypeGroup = $handler->contentTypeHandler()->createGroup( $contentContentTypeGroupCreate );
-
-        $usersContentTypeGroupCreate = new Persistence\Content\Type\Group\CreateStruct(
-            array(
-                'name' => array(),
-                'description' => array(),
-                'identifier' => 'Users',
-                'created' => $creationDate,
-                'modified' => $creationDate,
-                'creatorId' => $adminUser->id,
-                'modifierId' => $adminUser->id,
-            )
-        );
-
-        $usersContentTypeGroup = $handler->contentTypeHandler()->createGroup( $usersContentTypeGroupCreate );
+        $contentContentTypeGroup = $this->createTypeGroup($importUser, 'Content');
+        $usersContentTypeGroup = $this->createTypeGroup($importUser, 'Users');
 
         // Content Types
+        $landingPageType = $this->createLandingPageType( $importUser, $contentContentTypeGroup );
+        $userGroupType = $this->createUserGroupType( $importUser, $usersContentTypeGroup );
+        $userType = $this->createUserType( $importUser, $usersContentTypeGroup );
+
+        // Root location
+        $rootLocationCreate = new Persistence\Content\Location\CreateStruct(
+            array(
+                'remoteId' => '629709ba256fe317c3ddcee35453a96a',
+                'mainLocationId' => '1',
+                'sortField' => 1,
+                'sortOrder' => 1,
+            )
+        );
+        $rootLocation = $this->handler->locationHandler()->create( $rootLocationCreate );
+
+
+        $userGroup = $this->createRootUserGroup( $importUser, $userGroupType, $usersSection, $rootLocation, $language );
+        $home = $this->createHome( $importUser, $landingPageType, $standardSection, $rootLocation, $language );
+
+        // User
+        $userRoot = $userGroup->versionInfo->contentInfo->mainLocationId;
+        $anonymousUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'anonymous', '4e6f6184135228ccd45f8233d72a0363' );
+        $adminUser = $this->createUser( $importUser, $userType, $usersSection, $userRoot, $language, 'admin', 'c78e3b0f3d9244ed8c6d1c29464bdff9' );
+    }
+
+    protected function createImportUser()
+    {
+        return $this->handler->userHandler()->create(
+            new Persistence\User(
+                array(
+                    'id' => 1,
+                    'login' => 'import',
+                    'email' => 'nospam@ez.no',
+                    'passwordHash' => '*',
+                    'hashAlgorithm' => '2',
+                )
+            )
+        );
+    }
+
+    protected function createLanguage()
+    {
+        return $this->handler->contentLanguageHandler()->create(
+            new Persistence\Content\Language\CreateStruct(
+                array(
+                    'languageCode' => 'eng-GB',
+                    'name' => 'English (British)',
+                    'isEnabled' => true,
+                )
+            )
+        );
+    }
+
+    protected function createTypeGroup($user, $name)
+    {
+        return $this->handler->contentTypeHandler()->createGroup(
+            new Persistence\Content\Type\Group\CreateStruct(
+                array(
+                    'name' => array(),
+                    'description' => array(),
+                    'identifier' => $name,
+                    'created' => time(),
+                    'modified' => time(),
+                    'creatorId' => $user->id,
+                    'modifierId' => $user->id,
+                )
+            )
+        );
+    }
+
+    protected function createUserGroupType( $importUser, $usersContentTypeGroup )
+    {
         $userGroupTypeCreate = new Persistence\Content\Type\CreateStruct(
             array(
                 'name' => array(
-                    'eng-US' => 'User group',
+                    'eng-GB' => 'User group',
                 ),
                 'status' => 0,
                 'description' => array(),
                 'identifier' => 'user_group',
 
-                'created' => $creationDate,
-                'modified' => $creationDate,
-                'creatorId' => $adminUser->id,
-                'modifierId' => $adminUser->id,
+                'created' => time(),
+                'modified' => time(),
+                'creatorId' => $importUser->id,
+                'modifierId' => $importUser->id,
 
                 'remoteId' => '25b4268cdcd01921b808a0d854b877ef',
 
@@ -130,7 +141,7 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-US' => 'Name',
+                                'eng-GB' => 'Name',
                             ),
                             'description' => array(),
                             'identifier' => 'name',
@@ -164,7 +175,7 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-US' => 'Description',
+                                'eng-GB' => 'Description',
                             ),
                             'description' => array(),
                             'identifier' => 'description',
@@ -200,21 +211,95 @@ class RepositoryInitializer
             )
         );
 
-        $userGroupType = $handler->contentTypeHandler()->create( $userGroupTypeCreate );
+        return $this->handler->contentTypeHandler()->create( $userGroupTypeCreate );
+    }
 
+    protected function createUserType( $importUser, $usersContentTypeGroup )
+    {
+        $userGroupTypeCreate = new Persistence\Content\Type\CreateStruct(
+            array(
+                'name' => array(
+                    'eng-GB' => 'User',
+                ),
+                'status' => 0,
+                'description' => array(),
+                'identifier' => 'user',
+
+                'created' => time(),
+                'modified' => time(),
+                'creatorId' => $importUser->id,
+                'modifierId' => $importUser->id,
+
+                'remoteId' => 'user-8432795823475923',
+
+                'urlAliasSchema' => '',
+                'nameSchema' => '<name>',
+                'isContainer' => true,
+                'initialLanguageId' => 2,
+
+                'sortField' => 1,
+                'sortOrder' => 1,
+
+                'groupIds' => array( $usersContentTypeGroup->id ),
+
+                'fieldDefinitions' => array(
+                    new Persistence\Content\Type\FieldDefinition(
+                        array(
+                            'name' => array(
+                                'eng-GB' => 'Name',
+                            ),
+                            'description' => array(),
+                            'identifier' => 'name',
+                            'fieldGroup' => '',
+                            'position' => 1,
+                            'fieldType' => 'ezstring',
+                            'isTranslatable' => true,
+                            'isRequired' => true,
+                            'isInfoCollector' => false,
+                            'fieldTypeConstraints' => new Persistence\Content\FieldTypeConstraints(
+                                array(
+                                    'validators' => array(
+                                        'StringLengthValidator' => array(
+                                            'maxStringLength' => 255,
+                                            'minStringLength' => 0,
+                                        ),
+                                    ),
+                                    'fieldSettings' => NULL,
+                                )
+                            ),
+                            'defaultValue' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => NULL,
+                                    'externalData' => NULL,
+                                    'sortKey' => NULL,
+                                )
+                            ),
+                            'isSearchable' => true,
+                        )
+                    ),
+                ),
+                'defaultAlwaysAvailable' => true,
+            )
+        );
+
+        return $this->handler->contentTypeHandler()->create( $userGroupTypeCreate );
+    }
+
+    protected function createLandingPageType( $importUser, $contentContentTypeGroup )
+    {
         $landingPageTypeCreate = new Persistence\Content\Type\CreateStruct(
             array(
                 'name' => array(
-                    'eng-US' => 'Landing Page',
+                    'eng-GB' => 'Landing Page',
                 ),
                 'status' => 0,
                 'description' => array(),
                 'identifier' => 'landing_page',
 
-                'created' => $creationDate,
-                'modified' => $creationDate,
-                'creatorId' => $adminUser->id,
-                'modifierId' => $adminUser->id,
+                'created' => time(),
+                'modified' => time(),
+                'creatorId' => $importUser->id,
+                'modifierId' => $importUser->id,
 
                 'remoteId' => 'e36c458e3e4a81298a0945f53a2c81f4',
 
@@ -232,10 +317,10 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-US' => 'Name',
+                                'eng-GB' => 'Name',
                             ),
                             'description' => array(
-                                'eng-US' => '',
+                                'eng-GB' => '',
                             ),
                             'identifier' => 'name',
                             'fieldGroup' => '',
@@ -268,10 +353,10 @@ class RepositoryInitializer
                     new Persistence\Content\Type\FieldDefinition(
                         array(
                             'name' => array(
-                                'eng-US' => 'Layout',
+                                'eng-GB' => 'Layout',
                             ),
                             'description' => array(
-                                'eng-US' => '',
+                                'eng-GB' => '',
                             ),
                             'identifier' => 'page',
                             'fieldGroup' => '',
@@ -305,47 +390,31 @@ class RepositoryInitializer
             )
         );
 
-        $landingPageType = $handler->contentTypeHandler()->create( $landingPageTypeCreate );
+        return $this->handler->contentTypeHandler()->create( $landingPageTypeCreate );
+    }
 
-        // Content
-        // Location: /
-
-        $rootLocationCreate = new Persistence\Content\Location\CreateStruct(
-            array(
-                'remoteId' => '629709ba256fe317c3ddcee35453a96a',
-                'pathIdentificationString' => '',
-                'mainLocationId' => '1',
-                'sortField' => 1,
-                'sortOrder' => 1,
-            )
-        );
-
-        $rootLocation = $handler->locationHandler()->create( $rootLocationCreate );
-
-        // Location: /users/
-
-        $usersLocationCreate = new Persistence\Content\Location\CreateStruct(
-            array(
-                'priority' => 0,
-                'remoteId' => '3f6d92f8044aed134f32153517850f5a',
-                'parentId' => $rootLocation->id,
-                'pathIdentificationString' => 'users',
-                'sortField' => 1,
-                'sortOrder' => 1,
-            )
-        );
-
-        // Content for /users/
-
+    protected function createRootUserGroup( $importUser, $userGroupType, $usersSection, $rootLocation, $language )
+    {
         $usersContentCreate = new Persistence\Content\CreateStruct(
             array(
                 'name' => 'Users',
                 'typeId' => $userGroupType->id,
                 'sectionId' => $usersSection->id,
-                'ownerId' => $adminUser->id,
-                'modified' => $creationDate,
+                'ownerId' => $importUser->id,
+                'modified' => time(),
 
-                'locations' => array( $usersLocationCreate ),
+                'locations' => array(
+                    $userRootLocation = new Persistence\Content\Location\CreateStruct(
+                        array(
+                            'priority' => 0,
+                            'remoteId' => '3f6d92f8044aed134f32153517850f5a',
+                            'parentId' => $rootLocation->id,
+                            'pathIdentificationString' => 'users',
+                            'sortField' => 1,
+                            'sortOrder' => 1,
+                        )
+                    )
+                ),
 
                 'fields' => array(
                     new Persistence\Content\Field(
@@ -359,7 +428,7 @@ class RepositoryInitializer
                                     'sortKey' => '',
                                 )
                             ),
-                            'languageCode' => 'eng-US',
+                            'languageCode' => 'eng-GB',
                         )
                     ),
                     new Persistence\Content\Field(
@@ -373,7 +442,7 @@ class RepositoryInitializer
                                     'sortKey' => '',
                                 )
                             ),
-                            'languageCode' => 'eng-US',
+                            'languageCode' => 'eng-GB',
                         )
                     ),
                 ),
@@ -381,50 +450,51 @@ class RepositoryInitializer
                 'alwaysAvailable' => true,
                 'remoteId' => 'f5c88a2209584891056f987fd965b0ba',
 
-                'initialLanguageId' => $engUsLanguage->id,
+                'initialLanguageId' => $language->id,
 
                 'name' => array(
-                    'eng-US' => 'Users',
+                    'eng-GB' => 'Users',
                 ),
             )
         );
 
-        $userContent = $handler->contentHandler()->create( $usersContentCreate );
-        $userContent = $handler->contentHandler()->publish(
+        $userContent = $this->handler->contentHandler()->create( $usersContentCreate );
+        return $this->handler->contentHandler()->publish(
             $userContent->versionInfo->id,
             $userContent->versionInfo->versionNo,
             new Persistence\Content\MetadataUpdateStruct()
         );
+    }
 
-        // Home location:
-
-        $homeLocation = new Persistence\Content\Location\CreateStruct(
-            array(
-                'priority' => '0',
-                'remoteId' => 'f3e90596361e31d496d4026eb624c983',
-                'parentId' => $rootLocation->id,
-                'pathIdentificationString' => '',
-                'sortField' => 8,
-                'sortOrder' => 1,
-            )
-        );
-
+    protected function createHome( $importUser, $landingPageType, $standardSection, $rootLocation, $language )
+    {
         $homeContentCreate = new Persistence\Content\CreateStruct(
             array(
                 'name' => 'Home',
                 'typeId' => $landingPageType->id,
                 'sectionId' => $standardSection->id,
-                'ownerId' => $adminUser->id,
-                'modified' => $creationDate,
+                'ownerId' => $importUser->id,
+                'modified' => time(),
 
-                'locations' => array( $homeLocation ),
+                'locations' => array(
+                    $homeLocation = new Persistence\Content\Location\CreateStruct(
+                        array(
+                            'priority' => '0',
+                            'remoteId' => 'f3e90596361e31d496d4026eb624c983',
+                            'parentId' => $rootLocation->id,
+                            'pathIdentificationString' => '',
+                            'sortField' => 8,
+                            'sortOrder' => 1,
+                        )
+                    )
+                ),
 
                 'alwaysAvailable' => 1,
                 'remoteId' => '8a9c9c761004866fb458d89910f52bee',
 
-                'initialLanguageId' => $engUsLanguage->id,
+                'initialLanguageId' => $language->id,
                 'name' => array(
-                    'eng-US' => 'Home',
+                    'eng-GB' => 'Home',
                 ),
                 'fields' => array(
                     new Persistence\Content\Field(
@@ -438,7 +508,7 @@ class RepositoryInitializer
                                     'sortKey' => 'home',
                                 )
                             ),
-                            'languageCode' => 'eng-US',
+                            'languageCode' => 'eng-GB',
                         )
                     ),
                     new Persistence\Content\Field(
@@ -454,18 +524,89 @@ class RepositoryInitializer
                                     'sortKey' => NULL,
                                 )
                             ),
-                            'languageCode' => 'eng-US',
+                            'languageCode' => 'eng-GB',
                         )
                     ),
                 ),
             )
         );
 
-        $homeContent = $handler->contentHandler()->create( $homeContentCreate );
-        $homeContent = $handler->contentHandler()->publish(
+        $homeContent = $this->handler->contentHandler()->create( $homeContentCreate );
+        return $this->handler->contentHandler()->publish(
             $homeContent->versionInfo->id,
             $homeContent->versionInfo->versionNo,
             new Persistence\Content\MetadataUpdateStruct()
+        );
+    }
+
+    protected function createUser( $importUser, $userGroupType, $usersSection, $rootLocation, $language, $name, $passwordHash )
+    {
+        $userContentCreate = new Persistence\Content\CreateStruct(
+            array(
+                'name' => 'Users',
+                'typeId' => $userGroupType->id,
+                'sectionId' => $usersSection->id,
+                'ownerId' => $importUser->id,
+                'modified' => time(),
+
+                'locations' => array(
+                    $userRootLocation = new Persistence\Content\Location\CreateStruct(
+                        array(
+                            'priority' => 0,
+                            'remoteId' => $name,
+                            'parentId' => $rootLocation,
+                            'pathIdentificationString' => 'users',
+                            'sortField' => 1,
+                            'sortOrder' => 1,
+                        )
+                    )
+                ),
+
+                'fields' => array(
+                    new Persistence\Content\Field(
+                        array(
+                            'fieldDefinitionId' => $this->getFieldDefinition( $userGroupType, 1 ),
+                            'type' => 'ezstring',
+                            'value' => new Persistence\Content\FieldValue(
+                                array(
+                                    'data' => $name,
+                                    'externalData' => NULL,
+                                    'sortKey' => '',
+                                )
+                            ),
+                            'languageCode' => 'eng-GB',
+                        )
+                    ),
+                ),
+
+                'alwaysAvailable' => true,
+                'remoteId' => $name,
+
+                'initialLanguageId' => $language->id,
+
+                'name' => array(
+                    'eng-GB' => 'Users',
+                ),
+            )
+        );
+
+        $userContent = $this->handler->contentHandler()->create( $userContentCreate );
+        $userContent = $this->handler->contentHandler()->publish(
+            $userContent->versionInfo->id,
+            $userContent->versionInfo->versionNo,
+            new Persistence\Content\MetadataUpdateStruct()
+        );
+
+        return $this->handler->userHandler()->create(
+            new Persistence\User(
+                array(
+                    'id' => $userContent->versionInfo->contentInfo->id,
+                    'login' => $name,
+                    'email' => 'nospam@ez.no',
+                    'passwordHash' => $passwordHash,
+                    'hashAlgorithm' => '2',
+                )
+            )
         );
     }
 
