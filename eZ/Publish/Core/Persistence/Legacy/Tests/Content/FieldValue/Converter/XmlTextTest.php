@@ -56,12 +56,11 @@ EOT;
     public function testToStorageValue()
     {
         $value = new FieldValue;
-        $value->data = new DOMDocument;
-        $value->data->loadXML( $this->xmlText );
+        $value->data = $this->xmlText;
         $storageFieldValue = new StorageFieldValue;
 
         $this->converter->toStorageValue( $value, $storageFieldValue );
-        self::assertSame( $value->data->saveXML(), $storageFieldValue->dataText );
+        self::assertSame( $value->data, $storageFieldValue->dataText );
     }
 
     /**
@@ -74,6 +73,6 @@ EOT;
         $fieldValue = new FieldValue;
 
         $this->converter->toFieldValue( $storageFieldValue, $fieldValue );
-        self::assertSame( $storageFieldValue->dataText, $fieldValue->data->saveXML() );
+        self::assertSame( $storageFieldValue->dataText, $fieldValue->data );
     }
 }

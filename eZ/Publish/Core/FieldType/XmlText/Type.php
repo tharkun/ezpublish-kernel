@@ -141,9 +141,7 @@ class Type extends FieldType
 
         if ( $inputValue instanceof Input )
         {
-            $doc = new DOMDocument;
-            $doc->loadXML( $inputValue->getInternalRepresentation() );
-            $inputValue = new Value( $doc );
+            $inputValue = new Value( $inputValue->getInternalRepresentation() );
         }
         else if ( !$inputValue instanceof Value )
         {
@@ -182,9 +180,7 @@ class Type extends FieldType
      */
     public function fromHash( $hash )
     {
-        $doc = new DOMDocument;
-        $doc->loadXML( $hash['xml'] );
-        return new Value( $doc );
+        return new Value( $hash['xml'] );
     }
 
     /**
@@ -201,7 +197,7 @@ class Type extends FieldType
 
     /**
      * Creates a new Value object from persistence data.
-     * $fieldValue->data is supposed to be a DOMDocument object.
+     * $fieldValue->data is supposed to be a string.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
      *
@@ -221,7 +217,7 @@ class Type extends FieldType
     {
         return new FieldValue(
             array(
-                'data'         => $value->xml,
+                'data'         => $value->xml->saveXML(),
                 'externalData' => null,
                 'sortKey'      => $this->getSortInfo( $value )
             )
