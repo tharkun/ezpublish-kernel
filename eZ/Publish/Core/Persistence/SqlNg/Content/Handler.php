@@ -527,6 +527,8 @@ class Handler implements BaseContentHandler
     /**
      * Removes a relation by $relationId.
      *
+     * @TODO: Remove relation by source content id, version id and dest content id
+     *
      * @param mixed $relationId
      * @param int $type {@see \eZ\Publish\API\Repository\Values\Content\Relation::COMMON,
      *                 \eZ\Publish\API\Repository\Values\Content\Relation::EMBED,
