@@ -447,6 +447,26 @@ class UserServiceStub implements UserService
         throw new NotFoundExceptionStub( 'What error code should be used?' );
     }
 
+    /** Loads a user for the given login
+     *
+     * @param string $login
+     *
+     * @return \eZ\Publish\API\Repository\Values\User\User
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException if a user with the given credentials was not found
+     */
+    public function loadUserByLogin( $login )
+    {
+        foreach ( $this->users as $user )
+        {
+            if ( $login === $user->login )
+            {
+                return $user;
+            }
+        }
+        throw new NotFoundExceptionStub( 'What error code should be used?' );
+    }
+
     /**
      * This method deletes a user
      *
