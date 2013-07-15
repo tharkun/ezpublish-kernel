@@ -106,7 +106,6 @@ class RestListener implements EventSubscriberInterface
         $result = $event->getException();
 
         $event->setResponse( $this->visitResult( $result ) );
-        $event->stopPropagation();
     }
 
     /**
