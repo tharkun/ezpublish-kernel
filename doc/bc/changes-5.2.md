@@ -38,9 +38,6 @@ Changes affecting version compatibility with former or future versions.
 
 ## Removals
 
-No removals at the time of writing.
->>>>>>> EZP-209498: added BC doc entry
-
 No further changes known in this release at time of writing.
 See online on your corresponding eZ Publish version for
 updated list of known issues (missing features, breaks and errata).
