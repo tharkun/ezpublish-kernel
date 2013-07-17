@@ -224,7 +224,7 @@ class ImageIntegrationTest extends FileBaseIntegrationTest
                         'id' => __DIR__ . '/_fixtures/image.jpg',
                     )
                 ),
-                'eZ\\Publish\\Core\\Base\\Exceptions\\InvalidArgumentType',
+                'eZ\\Publish\\Core\\Base\\Exceptions\\InvalidArgumentException',
             ),
             array(
                 new ImageValue(
@@ -233,7 +233,7 @@ class ImageIntegrationTest extends FileBaseIntegrationTest
                         'fileName' => __DIR__ . '/_fixtures/image.jpg',
                     )
                 ),
-                'eZ\\Publish\\Core\\Base\\Exceptions\\InvalidArgumentType',
+                'eZ\\Publish\\Core\\Base\\Exceptions\\InvalidArgumentException',
             ),
         );
     }
